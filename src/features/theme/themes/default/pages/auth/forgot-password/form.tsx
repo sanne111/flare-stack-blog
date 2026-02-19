@@ -19,7 +19,10 @@ export function ForgotPasswordForm({ form }: ForgotPasswordFormProps) {
 
       <div className="space-y-6">
         <div className="space-y-2 group">
-          <label htmlFor="email" className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 group-focus-within:text-foreground transition-colors">
+          <label
+            htmlFor="email"
+            className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground/60 group-focus-within:text-foreground transition-colors"
+          >
             注册邮箱
           </label>
           <Input
