@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseWranglerJson } from "./safe-d1-migrate";
+import { parseWranglerJson } from "./parse-wrangler-json";
 
 describe("parseWranglerJson", () => {
   it("parses trailing JSON after wrangler upload progress logs", () => {

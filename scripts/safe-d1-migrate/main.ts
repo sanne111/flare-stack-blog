@@ -1,8 +1,9 @@
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
-import type { CommentStatus, PostStatus } from "../src/lib/db/schema";
-import { COMMENT_STATUSES, POST_STATUSES } from "../src/lib/db/schema";
+import type { CommentStatus, PostStatus } from "../../src/lib/db/schema";
+import { COMMENT_STATUSES, POST_STATUSES } from "../../src/lib/db/schema";
+import { parseWranglerJson } from "./parse-wrangler-json";
 
 type D1ExecuteResult<Row> = Array<{
   results: Array<Row>;
@@ -122,10 +123,10 @@ function printHelp() {
   console.log(`Safe D1 migration runner
 
 Usage:
-  bun scripts/safe-d1-migrate.ts [DB_BINDING]
-  bun scripts/safe-d1-migrate.ts --db DB_BINDING --remote
-  bun scripts/safe-d1-migrate.ts --db DB_BINDING --remote [--with-export]
-  bun scripts/safe-d1-migrate.ts --db DB_BINDING --local [--persist-to .wrangler/state]
+  bun scripts/safe-d1-migrate/main.ts [DB_BINDING]
+  bun scripts/safe-d1-migrate/main.ts --db DB_BINDING --remote
+  bun scripts/safe-d1-migrate/main.ts --db DB_BINDING --remote [--with-export]
+  bun scripts/safe-d1-migrate/main.ts --db DB_BINDING --local [--persist-to .wrangler/state]
 
 Options:
   --remote         Migrate a remote D1 database and auto-rollback with Time Travel on verification failure
@@ -187,49 +188,6 @@ function runWrangler(args: Array<string>) {
   }
 
   return stdout;
-}
-
-export function parseWranglerJson<T>(output: string) {
-  const trimmed = output.trim();
-
-  if (!trimmed) {
-    throw new Error("Wrangler returned no JSON output.");
-  }
-
-  try {
-    return JSON.parse(trimmed) as T;
-  } catch {
-    const candidateIndexes = new Set<number>();
-
-    for (let index = 0; index < trimmed.length; index += 1) {
-      const current = trimmed[index];
-      const previous = index === 0 ? "\n" : trimmed[index - 1];
-      if ((current === "[" || current === "{") && previous === "\n") {
-        candidateIndexes.add(index);
-      }
-    }
-
-    if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
-      candidateIndexes.add(0);
-    }
-
-    const candidates = Array.from(candidateIndexes).sort((left, right) => {
-      return right - left;
-    });
-
-    for (const index of candidates) {
-      const candidate = trimmed.slice(index);
-      try {
-        return JSON.parse(candidate) as T;
-      } catch {
-        continue;
-      }
-    }
-  }
-
-  throw new Error(
-    `Failed to parse Wrangler JSON output.\nRaw output:\n${trimmed}`,
-  );
 }
 
 function runWranglerJson<T>(args: Array<string>) {
@@ -360,9 +318,11 @@ function diffSummary(before: SafetySummary, after: SafetySummary) {
   const diffs: Array<string> = [];
 
   for (const section of ["posts", "comments"] as const) {
-    for (const [key, beforeValue] of Object.entries(before[section])) {
-      const afterValue =
-        after[section][key as keyof (typeof after)[typeof section]];
+    const beforeSection = before[section] as Record<string, number>;
+    const afterSection = after[section] as Record<string, number>;
+
+    for (const [key, beforeValue] of Object.entries(beforeSection)) {
+      const afterValue = afterSection[key];
       if (beforeValue !== afterValue) {
         diffs.push(`${section}.${key}: ${beforeValue} -> ${afterValue}`);
       }
