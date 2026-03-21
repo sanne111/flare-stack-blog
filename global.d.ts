@@ -1,3 +1,4 @@
+import type { OAuthHelpers } from "@cloudflare/workers-oauth-provider";
 import type { ThemeName, ThemeRouterConfig } from "@/features/theme/registry";
 import type {
   Auth as AuthType,
@@ -17,6 +18,11 @@ declare global {
   interface ScheduledPublishWorkflowParams {
     postId: number;
     publishedAt: string;
+  }
+
+  interface PostAutoSnapshotWorkflowParams {
+    postId: number;
+    quietWindowSeconds?: number;
   }
 
   interface CommentModerationWorkflowParams {
@@ -39,10 +45,12 @@ declare global {
 
   interface Env extends Cloudflare.Env {
     POST_PROCESS_WORKFLOW: Workflow<PostProcessWorkflowParams>;
+    POST_AUTO_SNAPSHOT_WORKFLOW: Workflow<PostAutoSnapshotWorkflowParams>;
     COMMENT_MODERATION_WORKFLOW: Workflow<CommentModerationWorkflowParams>;
     SCHEDULED_PUBLISH_WORKFLOW: Workflow<ScheduledPublishWorkflowParams>;
     EXPORT_WORKFLOW: Workflow<ExportWorkflowParams>;
     IMPORT_WORKFLOW: Workflow<ImportWorkflowParams>;
+    OAUTH_PROVIDER?: OAuthHelpers;
     QUEUE: Queue<QueueMessage>;
   }
 
