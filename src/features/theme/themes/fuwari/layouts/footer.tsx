@@ -24,7 +24,7 @@ export function Footer(_: FooterProps) {
 <script src="https://cubism.live2d.com/sdk-web/cubismcore/live2dcubismcore.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pixi.js@5.3.6/dist/pixi.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pixi-live2d-display@0.3.1/dist/cubism4.min.js"></script>
-<link href="https://sanne.qzz.io/pio.css" rel="stylesheet" type="text/css"/>
+<link href="https://raw.githubusercontent.com/sanne111/flare-stack-blog/refs/heads/main/pio.css" rel="stylesheet" type="text/css"/>
 <script src="https://cdn.jsdelivr.net/gh/journey-ad/blog-img@76ba2b3/live2d/lib/pio.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/journey-ad/blog-img@76ba2b3/live2d/lib/pio_sdk4.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/journey-ad/blog-img@76ba2b3/live2d/lib/load.js"></script>
